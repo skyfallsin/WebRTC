@@ -1,9 +1,4 @@
 # WebRTC Binaries for iOS and macOS
-[![Latest version](https://img.shields.io/github/v/release/stasel/webrtc)](https://github.com/stasel/WebRTC/releases)
-[![Release Date](https://img.shields.io/github/release-date/stasel/webrtc)](https://github.com/stasel/WebRTC/releases)
-[![Total Downloads](https://img.shields.io/github/downloads/stasel/webrtc/total)](https://github.com/stasel/WebRTC/releases)
-[![Cocoapods](https://img.shields.io/cocoapods/v/WebRTC-lib)](https://cocoapods.org/pods/WebRTC-lib)
-
 
 This repository contains unofficial distribution of WebRTC framework binaries for iOS and macOS.
 
@@ -30,7 +25,7 @@ The binary releases correspond with official Chromium releases and branches as s
 | **macOS**           |   ✅   |    ✅   |
 | **macOS Catalyst**  |   ✅   |    ✅   | 
 
-*Looking for 32 bit binaries? Please use [Version M94](https://github.com/stasel/WebRTC/releases/tag/94.0.0) or lower*
+*Looking for 32 bit binaries? Please use [Version M94](https://github.com/skyfallsin/WebRTC/releases/tag/94.0.0) or lower*
 
 ## 🚚 Installation
 
@@ -40,7 +35,7 @@ Xcode has a built-in support for Swift package manager. You can easily add the p
 Or, you can add the following dependency to your `Package.swift` file:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/stasel/WebRTC.git", .upToNextMajor("130.0.0"))
+    .package(url: "https://github.com/skyfallsin/WebRTC.git", .upToNextMajor("130.0.0"))
 ]
 ```
 
@@ -48,7 +43,7 @@ Use the `latest` branch to get the most up to date binary:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/stasel/WebRTC.git", branch: "latest")
+    .package(url: "https://github.com/skyfallsin/WebRTC.git", branch: "latest")
 ]
 ```
 
@@ -69,7 +64,7 @@ Read more about Cocoapods: https://cocoapods.org
 
 Add the following dependency to the `Cartfile` in your project:
 ```
-binary "https://raw.githubusercontent.com/stasel/WebRTC/latest/WebRTC.json"
+binary "https://raw.githubusercontent.com/skyfallsin/WebRTC/latest/WebRTC.json"
 ```
 Then update the dependencies using the following command:
 ```
@@ -80,7 +75,7 @@ And finally, add the xcframework located in `./Carthage/Build/WebRTC.xcframework
 Read more about Carthage: https://github.com/Carthage/Carthage
 
 ### Manual
-1. Download the framework from the [releases](https://github.com/stasel/WebRTC/releases) section.
+1. Download the framework from the [releases](https://github.com/skyfallsin/WebRTC/releases) section.
 2. Unzip the file.
 3. Add the xcframework to your target(s) embedded frameworks.
 
@@ -91,7 +86,7 @@ To import WebRTC to your code add the following import statement
 import WebRTC
 ```
 
-If you wish to see how to use WebRTC I highly recommend checking out my WebRTC demo iOS app: https://github.com/stasel/WebRTC-iOS
+If you wish to see how to use WebRTC I highly recommend checking out my WebRTC demo iOS app: https://github.com/skyfallsin/WebRTC-iOS
 
 
 ## 🛠 Compile your own WebRTC Frameworks

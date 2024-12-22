@@ -3,11 +3,11 @@ import json
 import requests
 from datetime import datetime, timedelta
 from dataclasses import dataclass
-import telegram
+# import telegram
 
 GITHUB_TOKEN=os.environ.get("GITHUB_TOKEN")
-TELEGRAM_TOKEN=os.environ.get("TELEGRAM_TOKEN")
-TELEGRAM_CHAT_ID=os.environ.get("TELEGRAM_CHAT_ID")
+# TELEGRAM_TOKEN=os.environ.get("TELEGRAM_TOKEN")
+# TELEGRAM_CHAT_ID=os.environ.get("TELEGRAM_CHAT_ID")
 
 @dataclass
 class NextReleaseResult:
@@ -46,11 +46,11 @@ def isReleaseAvailable(release):
     return datetime.today() >= (release.releaseDate + timedelta(days=1))
 
 def buildWebRTC(branch):
-    os.environ["BUILD_VP9"] = "true"
+    os.environ["BUILD_VP9"] = "false"
     os.environ["BRANCH"] = branch
-    os.environ["IOS"] = "true"
+    os.environ["IOS"] = "false"
     os.environ["MACOS"] = "true"
-    os.environ["MAC_CATALYST"] = "true"
+    os.environ["MAC_CATALYST"] = "false"
 
     return os.system('sh scripts/build.sh') == 0
 
@@ -72,7 +72,7 @@ def createReleaseDraft(release, buildMetadata):
         'body': body
     }
     headers = {'accept': 'application/vnd.github.v3+json', 'Authorization': f'token {GITHUB_TOKEN}'}
-    return requests.post("https://api.github.com/repos/stasel/WebRTC/releases", json = fields, headers = headers).json()
+    return requests.post("https://api.github.com/repos/skyfallsin/WebRTC/releases", json = fields, headers = headers).json()
 
 def uploadReleaseAsset(url, assetLocalPath, assetName):
     url = url.replace(u'{?name,label}','')
@@ -94,7 +94,7 @@ def createPullRequest(release, head):
         'base': 'latest',
         'body': 'Created by an automated sotfware 🤖'
     }
-    response = requests.post("https://api.github.com/repos/stasel/WebRTC/pulls", json = body, headers = headers)
+    response = requests.post("https://api.github.com/repos/skyfallsin/WebRTC/pulls", json = body, headers = headers)
     success = response.status_code == requests.codes.created
     if not success:
         print(response)
@@ -183,10 +183,10 @@ if __name__ == "__main__":
         os._exit(os.EX_SOFTWARE)
 
     # Notify about the new release via Telegram bot
-    if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-        print("➡️ Sending Telegram notification...")
-        bot = telegram.Bot(token=TELEGRAM_TOKEN)
-        message = f"New WebRTC Release M{nextRelease.version} is now available.\nCheck the PR here: https://github.com/stasel/WebRTC/pulls"
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
+    # if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
+    #     print("➡️ Sending Telegram notification...")
+    #     bot = telegram.Bot(token=TELEGRAM_TOKEN)
+    #     message = f"New WebRTC Release M{nextRelease.version} is now available.\nCheck the PR here: https://github.com/stasel/WebRTC/pulls"
+    #     bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
 
     print(f"✅ Done")

@@ -8,13 +8,13 @@ Pod::Spec.new do |spec|
   All binaries in this repository are compiled from the official WebRTC source code without any modifications to the sources code or to the output binaries.
   DESC
 
-  spec.homepage     = "https://github.com/stasel/WebRTC"
+  spec.homepage     = "https://github.com/skyfallsin/WebRTC"
   spec.license      = { :type => 'BSD', :file => 'WebRTC.xcframework/LICENSE' }
-  spec.author       = "Stasel"
+  spec.author       = "Stasel (original author)"
   spec.ios.deployment_target = '12.0'
   spec.osx.deployment_target = '10.11'
 
-  spec.source       = { :http => "https://github.com/stasel/WebRTC/releases/download/130.0.0/WebRTC-M130.xcframework.zip" }
+  spec.source       = { :http => "https://github.com/skyfallsin/WebRTC/releases/download/130.0.0/WebRTC-M130.xcframework.zip" }
   spec.vendored_frameworks = "WebRTC.xcframework"
   
 end
