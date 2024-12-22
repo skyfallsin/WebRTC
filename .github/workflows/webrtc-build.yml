@@ -41,6 +41,8 @@ jobs:
           MACOS: ${{ inputs.macos }}
           MAC_CATALYST: ${{ inputs.maccatalyst }}
           BUILD_VP9: true
+          RTC_EXCLUDE_AUDIO_PROCESSING: false
+          RTC_INCLUDE_INTERNAL_AUDIO_DEVICE: true
       - name: Upload framework
         uses: actions/upload-artifact@v4
         with:
