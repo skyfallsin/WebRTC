@@ -1540,7 +1540,7 @@ target_environment
 
     Configure the environment for which to build. Could be either "device",
     "simulator" or "catalyst". If unspecified, then it will be assumed to be
-    "simulator" if the target_cpu is "x68" or "x64", "device" otherwise. The
+    "simulator" if the target_cpu is "x64" or "x64", "device" otherwise. The
     default is only there for compatibility reasons and will be removed (see
     crbug.com/1138425 for more details).
 

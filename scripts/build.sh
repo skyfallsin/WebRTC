@@ -9,14 +9,38 @@
 # Configs
 DEBUG="${DEBUG:-false}"
 BUILD_VP9="${BUILD_VP9:-false}"
-BRANCH="${BRANCH:-master}"
+BRANCH="${BRANCH:-main}"
 IOS="${IOS:-false}"
 MACOS="${MACOS:-false}"
 MAC_CATALYST="${MAC_CATALYST:-false}"
 
 OUTPUT_DIR="./out"
 XCFRAMEWORK_DIR="out/WebRTC.xcframework"
-COMMON_GN_ARGS="is_debug=${DEBUG} rtc_libvpx_build_vp9=${BUILD_VP9} is_component_build=false rtc_include_tests=false rtc_enable_objc_symbol_export=true enable_stripping=true enable_dsyms=false use_lld=true rtc_ios_use_opengl_rendering=true rtc_exclude_audio_processing_module=false rtc_include_internal_audio_device=true"
+COMMON_GN_ARGS="is_debug=${DEBUG} \
+rtc_libvpx_build_vp9=${BUILD_VP9} \
+is_component_build=false \
+rtc_include_tests=false \
+rtc_enable_objc_symbol_export=true \
+enable_stripping=true \
+enable_dsyms=false \
+use_lld=true \
+rtc_ios_use_opengl_rendering=true \
+rtc_exclude_audio_processing_module=false \
+rtc_include_internal_audio_device=true \
+rtc_enable_protobuf=true \
+rtc_include_builtin_audio_codecs=true \
+rtc_build_examples=false \
+use_rtti=true \
+rtc_build_with_neon=true \
+rtc_enable_symbol_export=true \
+rtc_include_pulse_audio=false \
+rtc_include_ilbc=true \
+rtc_enable_sctp=true \
+rtc_apm_debug_dump=true \
+rtc_enable_intelligibility_enhancer=true \
+rtc_enable_objc_symbol_export_api=true \
+treat_warnings_as_errors=false \
+use_custom_libcxx=false"
 PLISTBUDDY_EXEC="/usr/libexec/PlistBuddy"
 
 build_iOS() {
@@ -26,16 +50,15 @@ build_iOS() {
     local gen_args="${COMMON_GN_ARGS} target_cpu=\"${arch}\" target_os=\"ios\" target_environment=\"${environment}\" ios_deployment_target=\"12.0\" ios_enable_code_signing=false"
     gn gen "${gen_dir}" --args="${gen_args}"
     gn args --list ${gen_dir} > ${gen_dir}/gn-args.txt
-    ninja -C "${gen_dir}" framework_objc || exit 1
+    ninja -C "${gen_dir}" framework_objc modules/audio_processing || exit 1
 }
 
 build_macOS() {
     local arch=$1
     local gen_dir="${OUTPUT_DIR}/macos-${arch}"
-    local gen_args="${COMMON_GN_ARGS} target_cpu=\"${arch}\" target_os=\"mac\""
-    gn gen "${gen_dir}" --args="${gen_args}"
-    gn args --list ${gen_dir} > ${gen_dir}/gn-args.txt
-    ninja -C "${gen_dir}" mac_framework_objc || exit 1
+    gn gen "${gen_dir}" --args-file="scripts/gn-args"
+    gn args --list "${gen_dir}" > "${gen_dir}/gn-args.txt"
+    ninja -C "${gen_dir}" mac_framework_objc modules/audio_processing || exit 1
 }
 
 # Catalyst builds are not working properly yet. 
@@ -88,7 +111,7 @@ cd src
 git fetch --all
 git checkout $BRANCH
 cd ..
-gclient sync --with_branch_heads --with_tags
+gclient sync --with_branch_heads --with_tags --jobs 12
 cd src
 
 # Step 3 - Compile and build all frameworks
@@ -101,7 +124,7 @@ if [ "$IOS" = true ]; then
 fi
 
 if [ "$MACOS" = true ]; then
-    build_macOS "x64"
+    # build_macOS "x64"
     build_macOS "arm64"
 fi
 
@@ -118,7 +141,7 @@ fi
 
 INFO_PLIST="${XCFRAMEWORK_DIR}/Info.plist"
 rm -rf "${XCFRAMEWORK_DIR}"
-mkdir "${XCFRAMEWORK_DIR}"
+mkdir -p "${XCFRAMEWORK_DIR}"
 "$PLISTBUDDY_EXEC" -c "Add :CFBundlePackageType string XFWK"  "${INFO_PLIST}"
 "$PLISTBUDDY_EXEC" -c "Add :XCFrameworkFormatVersion string 1.0"  "${INFO_PLIST}"
 "$PLISTBUDDY_EXEC" -c "Add :AvailableLibraries array" "${INFO_PLIST}"
@@ -130,8 +153,8 @@ if [[ "$IOS" = true ]]; then
     IOS_LIB_IDENTIFIER="ios-arm64"
     IOS_SIM_LIB_IDENTIFIER="ios-x86_64_arm64-simulator"
 
-    mkdir "${XCFRAMEWORK_DIR}/${IOS_LIB_IDENTIFIER}"
-    mkdir "${XCFRAMEWORK_DIR}/${IOS_SIM_LIB_IDENTIFIER}"
+    mkdir -p "${XCFRAMEWORK_DIR}/${IOS_LIB_IDENTIFIER}"
+    mkdir -p "${XCFRAMEWORK_DIR}/${IOS_SIM_LIB_IDENTIFIER}"
     LIB_IOS_INDEX=0
     LIB_IOS_SIMULATOR_INDEX=1
     plist_add_library $LIB_IOS_INDEX $IOS_LIB_IDENTIFIER "ios"
@@ -160,15 +183,13 @@ fi
 # Step 5.2 - Add macOS libs to XCFramework
 if [ "$MACOS" = true ]; then
 
-    MAC_LIB_IDENTIFIER="macos-x86_64_arm64"
+    MAC_LIB_IDENTIFIER="macos-arm64"
 
     mkdir "${XCFRAMEWORK_DIR}/${MAC_LIB_IDENTIFIER}"
     plist_add_library $LIB_COUNT "${MAC_LIB_IDENTIFIER}" "macos"
-    plist_add_architecture $LIB_COUNT "x86_64"
     plist_add_architecture $LIB_COUNT "arm64"
 
-    cp -RP out/macos-x64/WebRTC.framework "${XCFRAMEWORK_DIR}/${MAC_LIB_IDENTIFIER}"
-    lipo -create -output "${XCFRAMEWORK_DIR}/${MAC_LIB_IDENTIFIER}/WebRTC.framework/Versions/A/WebRTC" out/macos-x64/WebRTC.framework/WebRTC out/macos-arm64/WebRTC.framework/WebRTC
+    cp -RP out/macos-arm64/WebRTC.framework "${XCFRAMEWORK_DIR}/${MAC_LIB_IDENTIFIER}"
     LIB_COUNT=$((LIB_COUNT+1))
 fi
 
